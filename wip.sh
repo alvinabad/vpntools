@@ -1,3 +1,3 @@
 #!/bin/bash
 
-curl -v  https://ipv4.wtfismyip.com/json | sed 's/Fucking//g'
+curl -s https://ipv4.wtfismyip.com/json | sed 's/Fucking//g'
