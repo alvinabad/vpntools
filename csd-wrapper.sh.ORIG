@@ -1,23 +1,8 @@
 #!/bin/bash
 # Cisco Anyconnect CSD wrapper for OpenConnect
-# https://gist.github.com/l0ki000/56845c00fd2a0e76d688
 
-#-------------------------------------------------------------------------------
-# Prerequisite: apt install gconf2
-# Usage:
-# Save this file to $HOME/.cisco/csd-wrapper.sh
-# export CSD_HOSTNAME=yourvpnhost
-# sudo -E openconnect \
-#    --csd-user=$USER \
-#    --csd-wrapper=$HOME/.cisco/csd-wrapper.sh \
-#    --authgroup=1 \
-#    --user vpnuser \
-#    $CSD_HOSTNAME
-#
-# pkill cscan
-#-------------------------------------------------------------------------------
-
-# Set CSD_HOSTNAME to your vpnhost and export it to ENV
+# Enter your vpn host here
+CSD_HOSTNAME=
 if [[ -z ${CSD_HOSTNAME} ]]
 then
     echo "Define CSD_HOSTNAME with vpn-host in script text. Exiting."
@@ -27,7 +12,6 @@ fi
 HOSTSCAN_DIR="$HOME/.cisco/hostscan"
 LIB_DIR="$HOSTSCAN_DIR/lib"
 BIN_DIR="$HOSTSCAN_DIR/bin"
-TMP_DIR=${HOME}/.cisco/tmp
 
 BINS=("cscan" "cstub" "cnotify")
 
@@ -63,7 +47,7 @@ else
 fi
 
 # creating dirs
-for dir in $HOSTSCAN_DIR $LIB_DIR $BIN_DIR $TMP_DIR ; do
+for dir in $HOSTSCAN_DIR $LIB_DIR $BIN_DIR ; do
     if [[ ! -f $dir ]]
     then
         mkdir -p $dir
@@ -80,7 +64,7 @@ cat $HOSTSCAN_DIR/manifest | sed -r 's/\(|\)//g' | awk '{ cmd = "find $HOSTSCAN_
 # check number of files either
 MD5_LINES=`wc --lines $HOSTSCAN_DIR/md5.sum | awk '{ print $1; }'`
 MANIFEST_LINES=`wc --lines $HOSTSCAN_DIR/manifest | awk '{ print $1; }'`
-echo "Got $MANIFEST_LINES files in manifest, locally found $MD5_LINES"
+echo "Got $MANIFEST_LINES files in manifes, locally found $MD5_LINES"
 
 # check md5
 md5sum -c $HOSTSCAN_DIR/md5.sum
@@ -90,12 +74,12 @@ then
     # just download every file mentioned in manifest (not ideal, but hopefully should be enough)
     FILES=( $(cat $HOSTSCAN_DIR/manifest | sed -r 's/\(|\)//g' | awk '{ print $2; }') )
     WORK_DIR=`pwd`
-    cd $TMP_DIR
+    TMP_DIR=`mktemp -d` && cd $TMP_DIR
     for i in ${FILES[@]} ; do
         FILE="$(basename "$i")"
            
         echo "Downloading: $FILE to $TMP_DIR"
-        wget -q --no-check-certificate -c "https://${CSD_HOSTNAME}/CACHE/sdesktop/hostscan/$ARCH/$FILE" -O $FILE
+        wget --no-check-certificate -c "https://${CSD_HOSTNAME}/CACHE/sdesktop/hostscan/$ARCH/$FILE" -O $FILE
 
         # some files are in gz (don't understand logic here)
         if [[ ! -f $FILE || ! -s $FILE ]]
@@ -108,7 +92,7 @@ then
             echo "Failure on $FILE, trying gz"
             FILE_GZ=$FILE.gz
             wget --no-check-certificate -c "https://${CSD_HOSTNAME}/CACHE/sdesktop/hostscan/$ARCH/$FILE_GZ" -O $FILE_GZ
-            gzip -dk $FILE_GZ  # preserve gz file so that it won't get downloaded again next time
+            gunzip --verbose --decompress $FILE_GZ
         fi
 	
         # don't know why, but my version of hostscan requires tables to be stored in libs
@@ -125,10 +109,12 @@ then
     
     for i in ${BINS[@]} ; do
         echo "Setting excecution bit on: $BIN_DIR/$i"
-        [ -f "$BIN_DIR/$i" ] && chmod u+x $BIN_DIR/$i
+        chmod u+x $BIN_DIR/$i
     done
     
     cd $WORK_DIR
+    rm -rf $TMP_DIR
+    
 fi
 
 # cstub doesn't care about logging options, sic!
