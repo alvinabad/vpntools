@@ -1,0 +1,10 @@
+# $HOME/.ssh/config settings
+
+Host host2
+    ProxyCommand ssh user@host1 -W %h:%p
+Host *
+    ServerAliveInterval 30
+    ServerAliveCountMax 2
+    UserKnownHostsFile /dev/null
+    StrictHostKeyChecking no
+    LogLevel ERROR
