@@ -8,7 +8,7 @@ usage() {
     cat <<EOF
 Usage: `basename $0` [options] vpnhost
 
-User must have sudo access.
+User must have sudo access if CSD is used.
 
 options:
     -u username      vpn username
@@ -22,6 +22,11 @@ Examples:
     `basename $0` vpnhost
     `basename $0` -u vpnuser -g 1 vpnhost
 EOF
+    exit 1
+}
+
+abort() {
+    echo "ERROR: $@"
     exit 1
 }
 
@@ -50,9 +55,12 @@ shift "$(($OPTIND -1))"
 
 CSD_HOSTNAME=$1
 
-if [ `id -u` -eq 0 ]; then
-    echo "Run as regular user; password for sudo will be prompted."
-    exit 1
+if [ -f "$HOME/.cisco/csd-wrapper.sh" ]; then
+    # must not run as root
+    [ `id -u` -ne 0 ] || abort "CSD is detected. Must run as regular user; password for sudo will be prompted."
+else
+   # must run as root
+   [ `id -u` -eq 0 ] || abort "Must run as root"
 fi
 
 unset ALL_PROXY NO_PROXY
@@ -65,7 +73,12 @@ CSD_HOSTNAME=$1
 
 export CSD_HOSTNAME
 
-sudo -E openconnect \
+SUDO_OPT=
+if [ -f "$HOME/.cisco/csd-wrapper.sh" ]; then
+    SUDO_OPT="sudo -E"
+fi
+
+$SUDO_OPT openconnect \
     $USERNAME_OPT \
     $AUTHGROUP_OPT \
     $VERBOSE_OPT \
