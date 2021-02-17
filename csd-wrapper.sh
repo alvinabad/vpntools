@@ -1,6 +1,11 @@
 #!/bin/bash
+#
 # Cisco Anyconnect CSD wrapper for OpenConnect
-# https://gist.github.com/l0ki000/56845c00fd2a0e76d688
+# Taken from: https://gist.github.com/l0ki000/56845c00fd2a0e76d688
+#
+# This is a slightly modified version.
+# It prevents downloading of files from the vpn server every time it connects.
+# It only downloads if the files have changed.
 
 #-------------------------------------------------------------------------------
 # Prerequisite: apt install gconf2
