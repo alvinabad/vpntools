@@ -15,6 +15,8 @@ options:
                      It will be prompted if not supplied
     -g N             Authgroup number, e.g. 1
                      It will be prompted if not supplied
+    -p protocol      specify protocol, e,g, gp for Global Protect
+                     defaults to Cisco Anyconnect
     -b               Run in background
     -c               Use Cisco CSD wrapper
     -v               verbose display
@@ -22,6 +24,7 @@ options:
 Examples:
     `basename $0` vpnhost
     `basename $0` -u vpnuser -g 1 vpnhost
+    `basename $0` -u vpnuser -p gp vpnhost
 EOF
     exit 1
 }
@@ -39,13 +42,16 @@ BACKGROUND_OPT=
 VERBOSE_OPT=
 CSD_OPT=
 
-while getopts ":u:g:bcv" opt; do
+while getopts ":u:g:p:bcv" opt; do
   case "$opt" in
     u)
         USERNAME_OPT="--user $OPTARG"
         ;;
     g)
         AUTHGROUP_OPT="--authgroup $OPTARG"
+        ;;
+    p)
+        PROTOCOL_OPT="--protocol $OPTARG"
         ;;
     b)
         BACKGROUND_OPT="--background"
@@ -90,6 +96,7 @@ $SUDO_OPT openconnect \
     $VERBOSE_OPT \
     $BACKGROUND_OPT \
     $CSD_OPT \
+    $PROTOCOL_OPT \
     --pid-file=/var/run/openconnect.pid \
     $VPN_HOST
 
