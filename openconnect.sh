@@ -41,6 +41,7 @@ AUTHGROUP_OPT=
 BACKGROUND_OPT=
 VERBOSE_OPT=
 CSD_OPT=
+SERVERCERT_OPT=
 
 while getopts ":u:g:p:bcv" opt; do
   case "$opt" in
@@ -90,6 +91,10 @@ if [ -n "$CSD_OPT" ]; then
     SUDO_OPT="sudo -E"
 fi
 
+if [ -n "${SERVERCERT}" ]; then
+    SERVERCERT_OPT="--servercert ${SERVERCERT}"
+fi
+
 $SUDO_OPT openconnect \
     $USERNAME_OPT \
     $AUTHGROUP_OPT \
@@ -97,6 +102,7 @@ $SUDO_OPT openconnect \
     $BACKGROUND_OPT \
     $CSD_OPT \
     $PROTOCOL_OPT \
+    $SERVERCERT_OPT \
     --pid-file=/var/run/openconnect.pid \
     $VPN_HOST
 
