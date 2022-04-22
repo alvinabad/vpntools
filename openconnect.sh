@@ -95,6 +95,8 @@ if [ -n "${SERVERCERT}" ]; then
     SERVERCERT_OPT="--servercert ${SERVERCERT}"
 fi
 
+date
+
 $SUDO_OPT openconnect \
     $USERNAME_OPT \
     $AUTHGROUP_OPT \
