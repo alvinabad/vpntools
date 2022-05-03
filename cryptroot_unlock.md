@@ -37,7 +37,7 @@ sudo update-initramfs -u
 
 ## If your machine uses a static IP
 
-Add the IP informatiomn to this file: /etc/initramfs-tools/initramfs.conf
+Add the IP information to this file: /etc/initramfs-tools/initramfs.conf
 ```
 IP=192.168.1.7::192.168.1.1:255.255.255.0:myubuntu.com
 ```
@@ -58,6 +58,12 @@ sudo update-initramfs -u
 ```
 ssh -i ~/.ssh/id_rsa.myubuntu root@ipaddress
 ```
+
+Watch out for deprecated ssh-rsa.
+```
+ssh -o PubkeyAcceptedKeyTypes=+ssh-rsa -i ~/.ssh/id_rsa.myubuntu root@ipaddress
+```
+
 
 At the shell prompt, run cryptroot-unlock to unlock the LUKS encrypted disk.
 ```
@@ -145,6 +151,16 @@ copy_exec /usr/bin/nc
 cat <<EOF > "$DESTDIR/etc/profile"
 export PATH=$PATH:/sbin
 EOF
+```
+
+Set executable permission.
+```
+sudo chmod +x /usr/share/initramfs-tools/hooks/misc_tools
+```
+
+Update initramfs
+```
+sudo update-initramfs -u
 ```
 
 ## Multiple disks
