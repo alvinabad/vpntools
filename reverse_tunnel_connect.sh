@@ -24,13 +24,25 @@ trap abort INT
 #done
 #-R 3389:localhost:3389 \
 
-set -x
+#set -x
 
-ssh -v -N -T \
+cat <<EOF
+ssh -N -T \\
+-o UserKnownHostsFile=/dev/null \\
+-o StrictHostKeyChecking=no \\
+-o ServerAliveInterval=30 \\
+-o ExitOnForwardFailure=yes \\
+-o TCPKeepAlive=no \\
+-R 2222:localhost:22 \\
+$*
+EOF
+
+ssh -N -T \
 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no \
 -o ServerAliveInterval=30 \
 -o ExitOnForwardFailure=yes \
+-o TCPKeepAlive=no \
 -R 2222:localhost:22 \
-$1
+$*
 
