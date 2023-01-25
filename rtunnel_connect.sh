@@ -32,17 +32,17 @@ ssh -N -T \\
 -o StrictHostKeyChecking=no \\
 -o ServerAliveInterval=30 \\
 -o ExitOnForwardFailure=yes \\
--o TCPKeepAlive=no \\
 -R 2222:localhost:22 \\
 $*
 EOF
+#-o TCPKeepAlive=no \\
 
 ssh -N -T \
 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no \
 -o ServerAliveInterval=30 \
 -o ExitOnForwardFailure=yes \
--o TCPKeepAlive=no \
 -R 2222:localhost:22 \
 $*
 
+#-o TCPKeepAlive=no \
