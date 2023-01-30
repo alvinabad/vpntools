@@ -1,14 +1,14 @@
 ## Reverse Tunnel Connection
 
-If you don't have access to a host machine due to some firewall access policy, 
-e.g., incoming connections are not allowed to the host machine, but the host 
-machine has access to your host, you can still connect 
-to that remote machine by setting up a reverse tunnel. 
+If you don't have SSH access to a remote host machine due to some firewall restriction, 
+e.g., incoming SSH connections are not allowed, but the remote host can SSH to your
+machine, you will still be able to SSH to that remote machine by setting up a reverse tunnel. 
+The reverse tunnel works like you don't have access to the door of the castle, however, 
+there is someone inside the castle that can open a tunnel for you and now you can enter.
 
-Reverse tunnel works by initiating an SSH connection from the remote host 
-server into your host and 
-maintaining that connection running. With that connection in place, you will 
-then be able to SSH into the remote machine via that link.
+In order to create this tunnel connection, you need someone from the remote machine to 
+initiate an SSH connection into your machine using the -R option. Once that tunnel connection is 
+up and running, you will then be able to SSH from your machine into the remote host.
 
 Below are the steps to set up a reverse tunnel connection.
 
@@ -28,7 +28,11 @@ ssh -v -N -t \
     user@remotehost
 ```
 
-3. SSH into the localhost loopback address at port 2222 to connect to the remote host.
+The IP address 127.0.0.1 and port 2222 will serve as the IP address and port number your ssh connection 
+needs to use to connect to the remote host.
+
+3. From your host, SSH into the IP address 127.0.0.1 and port 2222. This should now allow you 
+to connect the remote host.
 ```
 ssh -p 2222 user@127.0.0.1
 ```
@@ -37,7 +41,7 @@ ssh -p 2222 user@127.0.0.1
 
 If you don't have access to a host machine , e.g., there is a firewall blocking 
 outgoing SSH connections, you can still connect by SSH into the remote host by 
-using jumps servers, where those jump servers don't have restrictions.
+using jumps servers, where those jump servers don't have restrictions. 
 
 Use the -J option to specify the jump server.
 ```
