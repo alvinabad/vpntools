@@ -1,48 +1,62 @@
 #!/bin/bash
 
-ENDPOINT=$1
+set -e
 
-if [ $# -eq 0 ]; then
+usage() {
     cat <<EOF
 Usage:
-    `basename $0` user@host
-EOF
-    exit 1
-fi
+    `basename $0` [options] user@host
 
-abort() {
-    echo "aborting..."
+options:
+    -R       Remote server; defaults to 2222:localhost:22
+    -v       verbose
+EOF
     exit 1
 }
 
-trap abort INT
+abort() {
+    echo "ERROR: $*" 1>&2
+    exit 1
+}
 
-#while :
-#do
-#echo "Restarting tunnel..."
-#sleep 5
-#done
-#-R 3389:localhost:3389 \
+[ $# -ne 0 ] || usage
 
-#set -x
+REMOTE_SERVER='2222:localhost:22'
+while getopts ":R:v" opt
+do
+  case "$opt" in
+    R)
+        REMOTE_SERVER=$OPTARG
+        ;;
+    v)
+        VERBOSE=true
+        VERBOSE_OPT=-v
+        ;;
+    ?)
+        usage
+        ;;
+  esac
+done
+shift "$(($OPTIND - 1))"
 
-cat <<EOF
-ssh -N -T \\
--o UserKnownHostsFile=/dev/null \\
--o StrictHostKeyChecking=no \\
--o ServerAliveInterval=30 \\
--o ExitOnForwardFailure=yes \\
--R 2222:localhost:22 \\
-$*
+if [ "$VERBOSE" = "true" ]; then
+    cat <<EOF
+    ssh -N -t $VERBOSE_OPT \\
+    -o UserKnownHostsFile=/dev/null \\
+    -o StrictHostKeyChecking=no \\
+    -o ServerAliveInterval=30 \\
+    -o ExitOnForwardFailure=yes \\
+    -R $REMOTE_SERVER  \\
+    $*
 EOF
-#-o TCPKeepAlive=no \\
+fi
 
-ssh -N -T \
+ssh -N -t $VERBOSE_OPT \
 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no \
 -o ServerAliveInterval=30 \
 -o ExitOnForwardFailure=yes \
--R 2222:localhost:22 \
+-R $REMOTE_SERVER \
 $*
 
 #-o TCPKeepAlive=no \
