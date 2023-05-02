@@ -3,6 +3,11 @@
 ssh -v -N -D 127.0.0.1:1080 user@proxyserver
 ```
 
+## Create loopback interface on Mac OS
+```
+sudo ifconfig lo0 alias 127.0.0.2
+```
+
 ## Access github repositories using https protocol
 
 ~/.gitconfig
