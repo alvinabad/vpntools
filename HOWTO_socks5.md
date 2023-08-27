@@ -19,10 +19,20 @@ sudo ifconfig lo0 alias 127.0.0.2
 ```
 
 ## Access github repositories using ssh protocol
+Option 1:
+```
+Host github.com
+    User git
+    ProxyJump user@host
+    LogLevel QUIET
+```
+
+Option 2:
 ```
 Host github.com
     User git
     ProxyCommand ssh user@proxyserver -W %h:%p
+    ProxyJump user@host
     LogLevel QUIET
 ```
 
@@ -47,3 +57,24 @@ Host anotherserver_IP
 4. Select SOCKS_v5
 5. Select Proxy DNS when using SOCKS v5
 
+## Use socks5 proxy for Ubuntu APT
+
+Add to /etc/apt/apt.conf
+```
+Acquire::http::proxy "socks5h://127.0.0.1:1080";
+```
+
+## Docker Access
+
+/etc/systemd/system/docker.service.d/proxy.conf
+```
+[Service]
+Environment="HTTP_PROXY=socks5://127.0.0.1:1080"
+Environment="HTTPS_PROXY=socks5://127.0.0.1:1080"
+```
+
+Restart docker
+```
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
