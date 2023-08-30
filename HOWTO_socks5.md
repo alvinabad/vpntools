@@ -66,7 +66,7 @@ Acquire::http::proxy "socks5h://127.0.0.1:1080";
 
 ## Docker Access
 
-/etc/systemd/system/docker.service.d/proxy.conf
+Create file: /etc/systemd/system/docker.service.d/http-proxy.conf
 ```
 [Service]
 Environment="HTTP_PROXY=socks5://127.0.0.1:1080"
@@ -77,4 +77,9 @@ Restart docker
 ```
 sudo systemctl daemon-reload
 sudo systemctl restart docker
+```
+
+Connect to proxy host
+```
+ssh -t -N -D "127.0.0.1:1080" root@host
 ```
