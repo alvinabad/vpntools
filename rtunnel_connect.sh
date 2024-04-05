@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -e -o pipefail
 
 usage() {
     cat <<EOF
@@ -38,6 +38,12 @@ do
   esac
 done
 shift "$(($OPTIND - 1))"
+
+if ps -ef | grep sshd | grep -v grep; then
+    true
+else
+    abort "I don't see sshd running?"
+fi
 
 if [ "$VERBOSE" = "true" ]; then
     cat <<EOF
