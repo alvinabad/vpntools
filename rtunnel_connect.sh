@@ -51,6 +51,7 @@ if [ "$VERBOSE" = "true" ]; then
     -o UserKnownHostsFile=/dev/null \\
     -o StrictHostKeyChecking=no \\
     -o ServerAliveInterval=30 \\
+    -o TCPKeepAlive=no \\
     -o ExitOnForwardFailure=yes \\
     -R $REMOTE_SERVER  \\
     $*
@@ -61,6 +62,7 @@ ssh -N -t $VERBOSE_OPT \
 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no \
 -o ServerAliveInterval=30 \
+-o TCPKeepAlive=no \
 -o ExitOnForwardFailure=yes \
 -R $REMOTE_SERVER \
 $*
