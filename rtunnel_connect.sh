@@ -9,6 +9,7 @@ Usage:
 
 options:
     -R       Remote server; defaults to 2222:localhost:22
+    -M       Use autossh and set monitoring port
     -v       verbose
 EOF
     exit 1
@@ -22,11 +23,14 @@ abort() {
 [ $# -ne 0 ] || usage
 
 REMOTE_SERVER='2222:localhost:22'
-while getopts ":R:v" opt
+while getopts ":R:M:v" opt
 do
   case "$opt" in
     R)
         REMOTE_SERVER=$OPTARG
+        ;;
+    M)
+        AUTOSSH_MONITOR=$OPTARG
         ;;
     v)
         VERBOSE=true
@@ -58,7 +62,17 @@ if [ "$VERBOSE" = "true" ]; then
 EOF
 fi
 
-ssh -N -t $VERBOSE_OPT \
+if [ -n "$AUTOSSH_MONITOR" ]; then
+    SSH_OPT="autossh -M $AUTOSSH_MONITOR"
+else
+    SSH_OPT="ssh"
+fi
+
+if [ "$VERBOSE" = "true" ]; then
+    set -x
+fi
+
+$SSH_OPT -N -t $VERBOSE_OPT \
 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no \
 -o ServerAliveInterval=30 \
