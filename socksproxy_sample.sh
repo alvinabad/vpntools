@@ -15,9 +15,15 @@ abort() {
 
 trap abort INT
 
+if type -P autossh >/dev/null; then
+    SSH_OPT="autossh -M 0"
+else
+    SSH_OPT=ssh
+fi
+
 set -x
 
-ssh -v -N -T \
+$SSH_OPT -v -N -T \
 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no \
 -o ServerAliveInterval=30 \

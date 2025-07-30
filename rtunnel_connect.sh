@@ -64,6 +64,8 @@ fi
 
 if [ -n "$AUTOSSH_MONITOR" ]; then
     SSH_OPT="autossh -M $AUTOSSH_MONITOR"
+elif type -P autossh >/dev/null; then
+    SSH_OPT="autossh -M 0"
 else
     SSH_OPT="ssh"
 fi
