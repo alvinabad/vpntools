@@ -2,6 +2,11 @@
 
 set -e -o pipefail
 
+script_dir=$(dirname $0)
+script_dir=$(cd "$script_dir" && pwd)
+
+#cd "$script_dir"
+
 usage() {
     cat <<EOF
 Usage:
@@ -43,10 +48,27 @@ do
 done
 shift "$(($OPTIND - 1))"
 
-if ps -ef | grep sshd | grep -v grep; then
-    true
+if [ -f /bin/MobaGitEditor ];then
+    PGREP_CMD="pgrep -lf sshd"
 else
-    abort "I don't see sshd running?"
+    PGREP_CMD="pgrep -a sshd"
+fi
+
+if $PGREP_CMD; then
+    echo "Found sshd"
+else
+    echo "I don't see sshd running?"
+    if [ -e /usr/sbin/sshd ]; then
+        # cygwin
+        echo "Run: /usr/sbin/sshd"
+    elif [ -e /usr/bin/sshd ]; then
+        # mobaterm
+        echo "Run: /usr/bin/sshd -p 23"
+    else
+        echo -n "Run: "
+        type -P sshd
+    fi
+    abort ""
 fi
 
 if [ "$VERBOSE" = "true" ]; then
@@ -73,6 +95,9 @@ fi
 if [ "$VERBOSE" = "true" ]; then
     set -x
 fi
+
+#echo "-R $REMOTE_SERVER"
+echo "$SSH_OPT -N -t $VERBOSE_OPT -R $REMOTE_SERVER $*"
 
 $SSH_OPT -N -t $VERBOSE_OPT \
 -o UserKnownHostsFile=/dev/null \
