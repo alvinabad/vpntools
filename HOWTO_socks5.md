@@ -59,9 +59,11 @@ Host anotherserver_IP
 
 ## Use socks5 proxy for Ubuntu APT
 
-Add to /etc/apt/apt.conf
+/etc/apt/apt.conf.d/proxy.conf
 ```
-Acquire::http::proxy "socks5h://127.0.0.1:1080";
+Acquire::http::Proxy "socks5h://127.0.0.1:1080";
+Acquire::https::Proxy "socks5h://127.0.0.1:1080";
+Acquire::socks::Proxy "socks5h://127.0.0.1:1080";
 ```
 
 ## Docker Access
