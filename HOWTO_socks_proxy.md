@@ -1,6 +1,7 @@
 ## Connect to a proxy server
 ```
-ssh -v -N -D 127.0.0.1:1080 user@proxyserver
+ssh -T -v -N -D 127.0.0.1:1080 user@proxyserver
+ssh -T -v -N -D 127.0.0.1:1080 -J user@jumpserver1,user@jumpserver2 user@proxyserver
 ```
 
 ## Create loopback interface on Mac OS
@@ -23,7 +24,7 @@ Option 1:
 ```
 Host github.com
     User git
-    ProxyJump user@host
+    ProxyJump user@host,user@host2
     LogLevel QUIET
 ```
 
